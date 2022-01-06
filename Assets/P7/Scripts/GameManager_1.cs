@@ -15,11 +15,20 @@ public class GameManager_1 : MonoBehaviour
     public bool isGameActive; //проверка, активна ли сейчас игра
     [SerializeField] private GameObject titleScreen;
     [SerializeField] private GameObject pauseScreen;
+    [SerializeField] private AudioSource backgroundAudio;
+    [SerializeField] private Slider volumeSlider;
+    private float musicVolume;
     public bool paused; //проверка, пауза сейчас или нет
     private int score;
     public int lives; 
     private float spawnRate = 1.0f; //таймер для появления объектов (кубов, врагов)
 
+    private void Start()
+    {
+        // get user saved preferences and set volume slider and volume accordingly
+        volumeSlider.value = PlayerPrefs.GetFloat("volumePref", 1.0f);
+        musicVolume = PlayerPrefs.GetFloat("volumePref", 1.0f);
+    }
 
     IEnumerator SpawnTarget() 
     {
@@ -91,6 +100,7 @@ public class GameManager_1 : MonoBehaviour
 
     void Update() 
     {
+        backgroundAudio.volume = musicVolume;
         if (isGameActive) 
         {
             if (Input.GetKeyDown(KeyCode.P)) //если нажать на кнопку P, то:
@@ -99,5 +109,13 @@ public class GameManager_1 : MonoBehaviour
             }
 
         }
+    }
+
+    // Used by default slider on value changed inspector field.
+    public void VolumeControl()
+    {
+        // get any changes to volume and save to player preferences and set volume
+        PlayerPrefs.SetFloat("volumePref", volumeSlider.value);
+        musicVolume = PlayerPrefs.GetFloat("volumePref", 1.0f);
     }
 }
